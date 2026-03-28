@@ -10,7 +10,7 @@ permissions:
 jobs:
   terraform-plan:
     name: "Terraform Plan"
-    runs-on: mdn-self-hosted-runner
+    runs-on: [self-hosted]
     if: github.actor == github.repository_owner
     steps:
       - name: Checkout
