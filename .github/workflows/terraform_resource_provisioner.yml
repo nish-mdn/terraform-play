@@ -66,3 +66,26 @@ jobs:
 
       - name: Deploy to AWS
         run: terraform apply -auto-approve tfplan # Uses the EXACT plan from before
+
+  terraform-destroy:
+    name: "Terraform destroy"
+    needs: terraform-deploy # WAIT for the plan to finish
+    runs-on: ubuntu-latest
+    if: github.actor == github.repository_owner
+    environment: staging # Manual Approval Gate
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::177701659471:role/github-to-aws-terraform-provisioner
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform destroy
+        run: terraform destroy
+ 
