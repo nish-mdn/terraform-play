@@ -33,5 +33,17 @@ jobs:
     if: github.actor == github.repository_owner
     environment: staging # This triggers the manual approval requirement
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::177701659471:role/github-to-aws-terraform-provisioner
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
       - name: Deploy to AWS
         run: terraform apply -auto-approve
