@@ -2,12 +2,14 @@ name: AWS Terraform Provision
 on:
   push:
     branches: [ main ]
+
 permissions:
-  id-token: write # Required for OIDC
-  contents: read  # Required to checkout code
+  id-token: write
+  contents: read
 
 jobs:
-  terraform:
+  terraform-plan:
+    name: "Terraform Plan"
     runs-on: ubuntu-latest
     if: github.actor == github.repository_owner
     steps:
@@ -27,14 +29,28 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan
-  deploy:
+        run: terraform plan -out=tfplan # Saves the plan to a file
+
+      - name: Upload Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: tfplan
+
+  terraform-deploy:
+    name: "Terraform Apply"
+    needs: terraform-plan # WAIT for the plan to finish
     runs-on: ubuntu-latest
     if: github.actor == github.repository_owner
-    environment: staging # This triggers the manual approval requirement
+    environment: staging # Manual Approval Gate
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Download Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -45,5 +61,8 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Terraform Init
+        run: terraform init
+
       - name: Deploy to AWS
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve tfplan # Uses the EXACT plan from before
