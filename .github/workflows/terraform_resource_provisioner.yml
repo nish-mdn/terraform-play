@@ -10,8 +10,8 @@ permissions:
 jobs:
   terraform-plan:
     name: "Terraform Plan"
-    runs-on: ubuntu-latest
-    if: github.actor == "github.repository_owner"
+    runs-on: mdn-self-hosted-runner
+    if: github.actor == github.repository_owner
     steps:
       - name: Checkout
         uses: actions/checkout@v4
