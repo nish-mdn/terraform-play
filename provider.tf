@@ -18,7 +18,7 @@ terraform {
 
   # Uncomment the backend block after creating the S3 bucket
    backend "s3" {
-     bucket  = "mytf-state-protection"
+     bucket  = "mdn-tf-state-bucket"
      key     = "terraform.tfstate"
      region  = "us-east-1"
      encrypt = true
