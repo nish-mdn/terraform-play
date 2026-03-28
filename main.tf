@@ -1,3 +1,9 @@
+module "s3" {
+  source      = "./modules/s3"
+  bucket_name = var.terraform_state_bucket_name
+  common_tags = var.resource_tags
+}
+
 module "vpc" {
   source              = "./modules/vpc"
   vpc_cidr            = var.vpc_cidr

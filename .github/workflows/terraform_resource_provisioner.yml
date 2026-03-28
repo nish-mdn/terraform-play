@@ -28,3 +28,10 @@ jobs:
 
       - name: Terraform Plan
         run: terraform plan
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.actor == github.repository_owner
+    environment: staging # This triggers the manual approval requirement
+    steps:
+      - name: Deploy to AWS
+        run: terraform apply -auto-approve
