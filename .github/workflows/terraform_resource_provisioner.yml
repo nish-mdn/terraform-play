@@ -1,0 +1,30 @@
+name: AWS Terraform Provision
+on:
+  push:
+    branches: [ main ]
+if: github.actor == github.repository_owner
+permissions:
+  id-token: write # Required for OIDC
+  contents: read  # Required to checkout code
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::177701659471:role/github-to-aws-terraform-provisioner
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan
